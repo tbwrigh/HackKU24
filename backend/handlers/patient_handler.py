@@ -46,6 +46,9 @@ async def create_patient(req: Request, name: str = Body(...), id_string: str = B
         patient = Patient(name=name, id_string=id_string)
         session.add(patient)
         session.commit()
+    
+    with Session(req.app.state.db) as session:
+        patient = session.execute(select(Patient).filter(Patient.id_string == id_string)).scalars().first()
         return patient
 
 @router.delete("/{patient_id}", responses={404: {"description": "Patient not found", "model": ErrorMessage}})

@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Request, UploadFile, File, Form, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from typing import List, Union
+
+import io
 
 from models.error import ErrorMessage
 from models.pair import Pair, PairResponse
@@ -47,7 +49,11 @@ async def get_file(req: Request, patient_id: int, filename: str) -> bytes:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "File not found"})
 
     blob = bucket.blob(filename)
-    return blob.download_as_string()
+    file_contents = io.BytesIO()
+    blob.download_to_file(file_contents)
+    file_contents.seek(0)
+
+    return StreamingResponse(file_contents, media_type="application/octet-stream")
 
 def upload_file(gcs_client, patient_id, file):
     bucket = gcs_client.get_bucket(patient_id)
@@ -88,8 +94,14 @@ async def make_pair(req: Request, patient_id: int, object_one_value: Union[str, 
     with Session(req.app.state.db) as session:
         pair = Pair(patient_id=patient_id, object_one_type=type_one, object_one_value=value_one, object_two_type=type_two, object_two_value=value_two)
         session.add(pair)
+        session.flush()
+        pair_id = pair.id
         session.commit()
+    
+    with Session(req.app.state.db) as session:
+        pair = session.execute(select(Pair).filter(Pair.id == pair_id)).scalars().first()
         return pair
+    
 
 def delete_file(gcs_client, patient_id, filename):
     bucket = gcs_client.get_bucket(patient_id)
@@ -102,10 +114,10 @@ async def delete_pair(req: Request, pair_id: int) -> PairResponse:
     Delete a pair by ID
     """
     with Session(req.app.state.db) as session:
+        pair = session.execute(select(Pair).filter(Pair.id == pair_id)).scalars().first()
         patient = session.execute(select(Patient).filter(Patient.id == pair.patient_id)).scalars().first()
         if not patient:
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Patient not found"})
-        pair = session.execute(select(Pair).filter(Pair.id == pair_id)).scalars().first()
         if not pair:
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "Pair not found"})
         if pair.object_one_type == "file":
