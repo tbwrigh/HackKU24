@@ -29,7 +29,46 @@
     let leftSelection = 'string'; 
     let rightSelection = 'string';
 
-    
+    async function onSubmit(event: any) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        console.log(formData);
+
+        const sendData = new FormData();
+
+        if (formData.get('leftInput') == null || formData.get('rightInput') == null) {
+            alert('Please fill out all fields');
+            return;
+        }
+
+        if (leftSelection === 'string') {
+            sendData.append('object_one_value', formData.get('leftInput')?.toString() || '');
+        } else {
+            sendData.append('object_one_value', formData.get('leftInput') as File);
+        }
+
+        if (rightSelection === 'string') {
+            sendData.append('object_two_value', formData.get('rightInput')?.toString() || '');
+        } else {
+            sendData.append('object_two_value', formData.get('rightInput') as File);
+        }
+
+        const res = await fetch(`${backendUrl}/pair/${patient.id}`, {
+            method: 'POST',
+            body: sendData,
+        });
+
+        if (!res.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        addModal = false;
+        leftSelection = 'string';
+        rightSelection = 'string';
+        console.log('submitted');
+    }
   </script>
 
     <h1>{patient.name}'s Profile</h1>
@@ -43,7 +82,7 @@
 
 <Modal bind:open={addModal} size="md" autoclose={false} class="w-full">
     <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Add a Pair</h3>
-    <form class="p-4">
+    <form class="p-4" on:submit={onSubmit}>
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col">
             <Label for="leftSelection" class="mb-2 w-full">
@@ -57,12 +96,12 @@
                 <Label for="leftInput" class="mb-2 w-full">
                     Enter Text (right)
                 </Label>
-                <Input id="leftInput" type="text" placeholder="Enter string" class="w-full"/>
+                <Input name="leftInput" id="leftInput" type="text" placeholder="Enter string" class="w-full" required/>
             {:else}
                 <Label for="leftInput" class="mb-2 w-full">
                     Upload File (right)
                 </Label>
-                <Input id="leftInput" type="file" class="w-full"/>
+                <Input name="leftInput" id="leftInput" type="file" class="w-full" required/>
             {/if}
           </div>
           <div class="flex flex-col">
@@ -77,12 +116,12 @@
                 <Label for="rightInput" class="mb-2 w-full">
                     Enter Text (right)
                 </Label>
-                <Input id="rightInput" type="text" placeholder="Enter string" class="w-full"/>
+                <Input name="rightInput" id="rightInput" type="text" placeholder="Enter string" class="w-full" required/>
             {:else}
                 <Label for="rightInput" class="mb-2 w-full">
                     Upload File (right)
                 </Label>
-                <Input id="rightInput" type="file" class="w-full"/>
+                <Input name="rightInput" id="rightInput" type="file" class="w-full" required/>
             {/if}
           </div>
         </div>
