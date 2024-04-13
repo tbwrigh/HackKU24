@@ -6,7 +6,7 @@
 </script>
 
 <div class="flashcard-container p-4">
-  <Card on:click={() => flipped = !flipped} style={`perspective: 700px; transition: transform 0.3s; ${flipped ? "transform: rotateY(0.5turn)" : ""}`}>
+  <Card on:click={() => flipped = !flipped} style={`perspective: 700px; text-align: center; transition: transform 0.3s; ${flipped ? "transform: rotateY(0.5turn)" : ""}`}>
     {#if flipped}
       <div style="transform: rotateY(0.5turn)">
         <slot name="back" />
