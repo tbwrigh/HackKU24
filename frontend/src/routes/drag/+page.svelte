@@ -1,9 +1,9 @@
 <script>
 	
-	function dragMe(node) {
+	function element(node) {
 		 let moving = false;
-		 let left = 300;
-		 let top = 100;
+		 let left = Math.random() * window.innerWidth;
+		 let top = Math.random() * window.innerHeight;
 
 		 node.style.position = 'absolute';
 		 node.style.top = `${top}px`;
@@ -17,8 +17,8 @@
 		 
 		window.addEventListener('mousemove', (e) => {
 			  if (moving) {
-					 left += e.movementX;
-					 top += e.movementY;
+					 left = e.clientX-50;
+					 top = e.clientY-15;
 					 node.style.top = `${top}px`;
 					 node.style.left = `${left}px`;
 				}
@@ -36,8 +36,9 @@
 		border: solid 1px grey;
 	}
 </style>
-
-	<h1 use:dragMe >
-		Drag Me
+{#each {length: 4} as _, i}
+	<h1 use:element >
+		Element for now
 	</h1>
+  {/each}
 
