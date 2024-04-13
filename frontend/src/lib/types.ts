@@ -4,6 +4,6 @@ export enum ElementType {
 };
 
 export type SelectItem = {
-  value: string;
+  href: string;
   label: string;
 }
