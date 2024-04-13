@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Card } from 'flowbite-svelte';
 	import { ElementType } from '$lib/types.ts';
 	import Element from '$lib/element.svelte';
 	
@@ -33,14 +34,11 @@
 	}
 </script>
 
-<style>
-	h1 {
-		border: solid 1px grey;
-	}
-</style>
 {#each {length: 4} as _, i}
-	<h1 use:element >
+  <div use:element>
+	<Card class="w-fit">
 		<Element value={"hello!"} type={ElementType.Text}/>
-	</h1>
+	</Card>
+  </div>
   {/each}
 
