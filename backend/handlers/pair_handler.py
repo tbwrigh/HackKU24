@@ -11,16 +11,25 @@ router = APIRouter(prefix="/pair", tags=["content"])
 
 @router.get("/")
 async def get_pairs(request: Request):
+    """
+    Get all pairs
+    """
     with Session(request.app.state.db) as session:
         return session.execute(select(Pair)).scalars().all()
 
 @router.get("/{patient_id}")
 async def get_pairs_by_patient_id(req: Request, patient_id: int):
+    """
+    Get all pairs for a patient
+    """
     with Session(req.app.state.db) as session:
         return session.execute(select(Pair).filter(Pair.patient_id == patient_id)).scalars().all()
 
 @router.get("/{patient_id}/{filename}")
 async def get_file(req: Request, patient_id: int, filename: str):
+    """
+    Get a file for a patient
+    """
     with Session(req.app.state.db) as session:
         patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
         if not patient:
@@ -43,6 +52,9 @@ def upload_file(gcs_client, patient_id, file):
 
 @router.post("/{patient_id}")
 async def make_pair(req: Request, patient_id: int, object_one_value: Union[str, UploadFile] = Form(...), object_two_value: Union[str, UploadFile] = Form(...)):
+    """
+    Create a pair for a patient
+    """
     with Session(req.app.state.db) as session:
         patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
         if not patient:
@@ -75,6 +87,9 @@ def delete_file(gcs_client, patient_id, filename):
 
 @router.delete("/{pair_id}")
 async def delete_pair(req: Request, pair_id: int):
+    """
+    Delete a pair by ID
+    """
     with Session(req.app.state.db) as session:
         pair = session.execute(select(Pair).filter(Pair.id == pair_id)).scalars().first()
         patient = session.execute(select(Patient).filter(Patient.id == pair.patient_id)).scalars().first()

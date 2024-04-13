@@ -36,4 +36,7 @@ app.include_router(pair_handler.router)
 
 @app.get("/")
 def read_root():
+    """
+    Returns the API version
+    """
     return {"API Version": "1.2.0"}
