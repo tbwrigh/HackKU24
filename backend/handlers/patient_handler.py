@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from models.patient import Patient, PatientResponse
+from models.error import ErrorMessage
 
 router = APIRouter(prefix="/patient", tags=["patient"])
 
@@ -17,7 +18,7 @@ async def get_patients(req: Request) -> List[PatientResponse]:
     with Session(req.app.state.db) as session:
         return session.execute(select(Patient)).scalars().all()
 
-@router.get("/{patient_id}", responses={404: {"description": "Patient not found"}})
+@router.get("/{patient_id}", responses={404: {"description": "Patient not found", "model": ErrorMessage}})
 async def get_patient_by_id(req: Request, patient_id: int) -> PatientResponse:
     """
     Get a patient by ID
@@ -30,7 +31,7 @@ async def get_patient_by_id(req: Request, patient_id: int) -> PatientResponse:
         
         return patient
 
-@router.post("/", responses={409: {"description": "Patient Identifier already in use"}})
+@router.post("/", responses={409: {"description": "Patient Identifier already in use", "model": ErrorMessage}})
 async def create_patient(req: Request, name: str = Body(...), id_string: str = Body(...)) -> PatientResponse:
     """
     Create a patient
@@ -47,7 +48,7 @@ async def create_patient(req: Request, name: str = Body(...), id_string: str = B
         session.commit()
         return patient
 
-@router.delete("/{patient_id}", responses={404: {"description": "Patient not found"}})
+@router.delete("/{patient_id}", responses={404: {"description": "Patient not found", "model": ErrorMessage}})
 async def delete_patient(req: Request, patient_id: int) -> PatientResponse:
     """
     Delete a patient by ID

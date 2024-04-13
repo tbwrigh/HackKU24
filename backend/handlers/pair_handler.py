@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from typing import List, Union
 
+from models.error import ErrorMessage
 from models.pair import Pair, PairResponse
 from models.patient import Patient
 
@@ -18,7 +19,7 @@ async def get_pairs(request: Request) -> List[PairResponse]:
     with Session(request.app.state.db) as session:
         return session.execute(select(Pair)).scalars().all()
 
-@router.get("/{patient_id}", responses={404: {"description": "Patient not found"}})
+@router.get("/{patient_id}", responses={404: {"description": "Patient not found", "model": ErrorMessage}})
 async def get_pairs_by_patient_id(req: Request, patient_id: int) -> List[PairResponse]:
     """
     Get all pairs for a patient
@@ -30,7 +31,7 @@ async def get_pairs_by_patient_id(req: Request, patient_id: int) -> List[PairRes
 
         return session.execute(select(Pair).filter(Pair.patient_id == patient_id)).scalars().all()
 
-@router.get("/{patient_id}/{filename}", responses={404: {"description": "Patient or File not found"}})
+@router.get("/{patient_id}/{filename}", responses={404: {"description": "Patient or File not found", "model": ErrorMessage}})
 async def get_file(req: Request, patient_id: int, filename: str) -> bytes:
     """
     Get a file for a patient
@@ -60,7 +61,7 @@ def upload_file(gcs_client, patient_id, file):
     blob.upload_from_file(file.file)
     return file.filename
 
-@router.post("/{patient_id}", responses={404: {"description": "Patient not found"}})
+@router.post("/{patient_id}", responses={404: {"description": "Patient not found", "model": ErrorMessage}})
 async def make_pair(req: Request, patient_id: int, object_one_value: Union[str, UploadFile] = Form(...), object_two_value: Union[str, UploadFile] = Form(...)) -> PairResponse:
     """
     Create a pair for a patient
@@ -95,7 +96,7 @@ def delete_file(gcs_client, patient_id, filename):
     blob = bucket.blob(filename)
     blob.delete()
 
-@router.delete("/{pair_id}", responses={404: {"description": "Patient or Pair not found"}})
+@router.delete("/{pair_id}", responses={404: {"description": "Patient or Pair not found", "model": ErrorMessage}})
 async def delete_pair(req: Request, pair_id: int) -> PairResponse:
     """
     Delete a pair by ID
