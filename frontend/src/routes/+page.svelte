@@ -1,5 +1,7 @@
-<script>
+<script lang="ts">
   import { Alert, Label, Input } from 'flowbite-svelte';
+  import { ElementType } from '$lib/types.ts';
+  import Element from '$lib/element.svelte';
 
   let in0val = "";
   let in1val = "";
@@ -14,3 +16,5 @@
     <Alert>They match!</Alert>
   {/if}
 </div>
+
+<Element value={"hello!"} type={ElementType.Text}/>
