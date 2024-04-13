@@ -1,12 +1,16 @@
 <script>
-  import { Alert } from 'flowbite-svelte';
+  import { Alert, Label, Input } from 'flowbite-svelte';
+
+  let in0val = "";
+  let in1val = "";
 </script>
 
-<div class="p-8">
-  <Alert color="blue">
-    <span class="font-medium">Info alert!</span>
-    Change a few things up and try submitting again.
-  </Alert>
+<div>
+  <Label for="default-input" class="block mb-2">Item 1</Label>
+  <Input id="default-input" name="in0" placeholder="first match" bind:value={in0val} />
+  <Label for="default-input" class="block mb-2">Item 2</Label>
+  <Input id="default-input" name="in1" placeholder="second match" bind:value={in1val} />
+  {#if in0val!=="" && in0val==in1val}
+    <Alert>They match!</Alert>
+  {/if}
 </div>
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
