@@ -7,7 +7,7 @@ class Pair(Base):
     __tablename__ = 'object_pairs'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    patient_id: Mapped[int] = mapped_column(Integer, ForeignKey('patients.id'), nullable=False)
+    patient_id: Mapped[int] = mapped_column(Integer, ForeignKey('patients.id', ondelete="CASCADE"), nullable=False)
     object_one_type: Mapped[str] = mapped_column(String(100), nullable=False)
     object_one_value: Mapped[str] = mapped_column(String(100), nullable=False)
     object_two_type: Mapped[str] = mapped_column(String(100), nullable=False)
