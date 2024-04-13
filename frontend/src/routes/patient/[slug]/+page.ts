@@ -1,9 +1,17 @@
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = ({ params }) => {
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+export const load: PageLoad = async ({ fetch, params }) => {
+  let json = undefined;
+  try {
+    const response = await fetch(`${backendUrl}/patient/${params.slug}`);
+    json = await response.json();
+  } catch (error) {
+    console.error('Error:', error);
+  }
   return {
-    // placeholder values until we query the database
-    slug: params.slug, // same as ID
-    name: "John Doe",
+    slug: json.id,
+    name: json === undefined ? 'error' : json.name,
   };
 };
