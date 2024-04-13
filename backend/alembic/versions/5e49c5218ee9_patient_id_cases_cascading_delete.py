@@ -19,10 +19,10 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.drop_constraint('patient_id', 'object_pairs', type_='foreignkey')
-    op.create_foreign_key('patient_id', 'object_pairs', 'patients', ['patient_id'], ['id'], ondelete='CASCADE')
+    op.drop_constraint('patient_id', 'pairs', type_='foreignkey')
+    op.create_foreign_key('patient_id', 'pairs', 'patients', ['patient_id'], ['id'], ondelete='CASCADE')
 
 
 def downgrade() -> None:
-    op.drop_constraint('patient_id', 'object_pairs', type_='foreignkey')
-    op.create_foreign_key('patient_id', 'object_pairs', 'patients', ['patient_id'], ['id'])
+    op.drop_constraint('patient_id', 'pairs', type_='foreignkey')
+    op.create_foreign_key('patient_id', 'pairs', 'patients', ['patient_id'], ['id'])
