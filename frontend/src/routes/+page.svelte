@@ -16,7 +16,7 @@
       const data = await response.json();
       console.log(data);
       data.forEach((patient: any) => {
-        const item = { value: patient.id_string, label: patient.name };
+        const item = { value: patient.id, label: patient.name };
         patients = [...patients, item];
       });
     } catch (error) {
