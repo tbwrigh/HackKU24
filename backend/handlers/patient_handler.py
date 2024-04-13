@@ -1,13 +1,15 @@
 from fastapi import APIRouter, Request, Body
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from typing import List
 
-from models.patient import Patient
+from models.patient import Patient, PatientResponse
 
 router = APIRouter(prefix="/patient", tags=["patient"])
 
 @router.get("/")
-async def get_patients(req: Request):
+async def get_patients(req: Request) -> List[PatientResponse]:
     """
     Get all patients
     """
@@ -15,7 +17,7 @@ async def get_patients(req: Request):
         return session.execute(select(Patient)).scalars().all()
 
 @router.get("/{patient_id}")
-async def get_patient_by_id(req: Request, patient_id: int):
+async def get_patient_by_id(req: Request, patient_id: int) -> PatientResponse:
     """
     Get a patient by ID
     """
@@ -23,7 +25,7 @@ async def get_patient_by_id(req: Request, patient_id: int):
         return session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
 
 @router.post("/")
-async def create_patient(req: Request, name: str = Body(...), id_string: str = Body(...)):
+async def create_patient(req: Request, name: str = Body(...), id_string: str = Body(...)) -> PatientResponse:
     """
     Create a patient
     """
@@ -35,7 +37,7 @@ async def create_patient(req: Request, name: str = Body(...), id_string: str = B
         return patient
 
 @router.delete("/{patient_id}")
-async def delete_patient(req: Request, patient_id: int):
+async def delete_patient(req: Request, patient_id: int) -> PatientResponse:
     """
     Delete a patient by ID
     """

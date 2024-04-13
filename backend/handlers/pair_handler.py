@@ -2,15 +2,15 @@ from fastapi import APIRouter, Request, UploadFile, File, Form
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from typing import Union
+from typing import List, Union
 
-from models.pair import Pair
+from models.pair import Pair, PairResponse
 from models.patient import Patient
 
 router = APIRouter(prefix="/pair", tags=["content"])
 
 @router.get("/")
-async def get_pairs(request: Request):
+async def get_pairs(request: Request) -> List[PairResponse]:
     """
     Get all pairs
     """
@@ -18,7 +18,7 @@ async def get_pairs(request: Request):
         return session.execute(select(Pair)).scalars().all()
 
 @router.get("/{patient_id}")
-async def get_pairs_by_patient_id(req: Request, patient_id: int):
+async def get_pairs_by_patient_id(req: Request, patient_id: int) -> List[PairResponse]:
     """
     Get all pairs for a patient
     """
@@ -26,7 +26,7 @@ async def get_pairs_by_patient_id(req: Request, patient_id: int):
         return session.execute(select(Pair).filter(Pair.patient_id == patient_id)).scalars().all()
 
 @router.get("/{patient_id}/{filename}")
-async def get_file(req: Request, patient_id: int, filename: str):
+async def get_file(req: Request, patient_id: int, filename: str) -> bytes:
     """
     Get a file for a patient
     """
@@ -51,7 +51,7 @@ def upload_file(gcs_client, patient_id, file):
     return file.filename
 
 @router.post("/{patient_id}")
-async def make_pair(req: Request, patient_id: int, object_one_value: Union[str, UploadFile] = Form(...), object_two_value: Union[str, UploadFile] = Form(...)):
+async def make_pair(req: Request, patient_id: int, object_one_value: Union[str, UploadFile] = Form(...), object_two_value: Union[str, UploadFile] = Form(...)) -> PairResponse:
     """
     Create a pair for a patient
     """
@@ -86,7 +86,7 @@ def delete_file(gcs_client, patient_id, filename):
     blob.delete()
 
 @router.delete("/{pair_id}")
-async def delete_pair(req: Request, pair_id: int):
+async def delete_pair(req: Request, pair_id: int) -> PairResponse:
     """
     Delete a pair by ID
     """

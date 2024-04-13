@@ -1,5 +1,6 @@
 from .base import Base
 
+from pydantic import BaseModel
 from sqlalchemy import String, Integer, ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped
 
@@ -18,3 +19,11 @@ class Pair(Base):
     
     def __str__(self) -> str:
         return f'Pair({self.id}, {self.patient_id}, {self.object_one_type}, {self.object_one_value}, {self.object_two_type}, {self.object_two_value})'
+    
+class PairResponse(BaseModel):
+    id: int
+    patient_id: int
+    object_one_type: str
+    object_one_value: str
+    object_two_type: str
+    object_two_value: str

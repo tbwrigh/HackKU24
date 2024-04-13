@@ -1,5 +1,6 @@
 from .base import Base
 
+from pydantic import BaseModel
 from sqlalchemy import String, Integer
 from sqlalchemy.orm import mapped_column, Mapped
 
@@ -15,3 +16,8 @@ class Patient(Base):
     
     def __str__(self) -> str:
         return f'Patient({self.id}, {self.name}, {self.id_string})'
+    
+class PatientResponse(BaseModel):
+    id: int
+    name: str
+    id_string: str
