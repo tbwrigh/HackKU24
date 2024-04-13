@@ -1,4 +1,6 @@
-<script>
+<script lang="ts">
+	import { ElementType } from '$lib/types.ts';
+	import Element from '$lib/element.svelte';
 	
 	function element(node) {
 		 let moving = false;
@@ -38,7 +40,7 @@
 </style>
 {#each {length: 4} as _, i}
 	<h1 use:element >
-		Element for now
+		<Element value={"hello!"} type={ElementType.Text}/>
 	</h1>
   {/each}
 
