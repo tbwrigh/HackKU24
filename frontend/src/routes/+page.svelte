@@ -27,12 +27,7 @@
   async function handleSubmit(event: any) {
     event.preventDefault();
 
-    console.log(event.target);
-
     const formData = new FormData(event.target);
-
-    console.log(formData); 
-
     const patientName: string = formData.get('patientName')?.toString() || '';
 
     if (!patientName) {
