@@ -1,10 +1,28 @@
 <script lang="ts">
   import Selection from '$lib/selection.svelte';
+  import type { SelectItem } from '$lib/types';
   import { Button, Modal, Label, Input } from 'flowbite-svelte';
   import { PlusOutline } from 'flowbite-svelte-icons';
+  import { onMount } from 'svelte';
   let formModal = false;
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  let patients: SelectItem[] = [];
+
+  onMount(async () => {
+    try {
+      const response = await fetch(`${backendUrl}/patient/`);
+      const data = await response.json();
+      console.log(data);
+      data.forEach((patient: any) => {
+        const item = { value: patient.id_string, label: patient.name };
+        patients = [...patients, item];
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  });
 
   async function handleSubmit(event: any) {
     event.preventDefault();
@@ -49,7 +67,9 @@
   }
 </script>
 
-<Selection heading={"Choose a Patient"} options={["Bob", "Janet", "Ivan", "Dorothy"]} />
+{#key patients}
+  <Selection heading={"Choose a Patient"} options={patients} />
+{/key}
 
 <div class="fixed bottom-4 right-4 z-50">
   <Button on:click={() => (formModal = true)} color="blue" pill={true} class="!p-2">
