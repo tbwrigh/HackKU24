@@ -18,18 +18,10 @@ async def get_patient_by_id(req: Request, patient_id: int):
 
 @router.post("/")
 async def create_patient(req: Request, name: str = Body(...), id_string: str = Body(...)):
+    req.app.state.gcs_client.create_bucket(id_string)
     with Session(req.app.state.db) as session:
         patient = Patient(name=name, id_string=id_string)
         session.add(patient)
-        session.commit()
-        return patient
-
-@router.put("/{patient_id}")
-async def update_patient(req: Request, patient_id: int, name: str = Body(...), id_string: str = Body(...)):
-    with Session(req.app.state.db) as session:
-        patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
-        patient.name = name
-        patient.id_string = id_string
         session.commit()
         return patient
 
@@ -37,6 +29,7 @@ async def update_patient(req: Request, patient_id: int, name: str = Body(...), i
 async def delete_patient(req: Request, patient_id: int):
     with Session(req.app.state.db) as session:
         patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
+        req.app.state.gcs_client.get_bucket(patient.id_string).delete()
         session.delete(patient)
         session.commit()
         return patient
