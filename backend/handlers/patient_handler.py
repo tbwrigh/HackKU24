@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Request, Body, JSONResponse
+from fastapi import APIRouter, Request, Body
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
