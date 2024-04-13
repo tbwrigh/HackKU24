@@ -5,6 +5,8 @@
     import { PlusOutline } from 'flowbite-svelte-icons';
     import { Button, Modal, Select, Input, Label } from 'flowbite-svelte';
 
+    import PairComponent from '$lib/PairComponent.svelte';
+
     import type { Patient } from '$lib/types';
   
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -17,12 +19,16 @@
         id_string: "",
     };
 
+    let pairs: string[] = [];
+
     onMount(async () => {
-        console.log(data);
-        console.log(data.slug);
-        console.log(`${backendUrl}/patients/${data.slug}`);
         const res = await fetch(`${backendUrl}/patient/${data.slug}`);
         patient = await res.json();
+        const res2 = await fetch(`${backendUrl}/pair/patient/${patient.id}`);
+        let pairsData = await res2.json();
+        pairsData.forEach((pair: any) => {
+            pairs = [...pairs, pair.id];
+        });
     });
 
     let addModal = false;
@@ -64,14 +70,28 @@
             throw new Error('Network response was not ok');
         }
 
+        pairs = [...pairs, (await res.json()).id];
+
         addModal = false;
         leftSelection = 'string';
         rightSelection = 'string';
         console.log('submitted');
     }
+
+    async function deleteCallback(id: string) {
+        let temp_pairs: string[] = pairs.filter((pair) => pair !== id);
+        pairs = temp_pairs;
+    }
   </script>
 
     <h1>{patient.name}'s Profile</h1>
+
+    <div class="grid grid-cols-1 gap-4 mt-4">
+        {#each pairs as pair (pair)}
+            <PairComponent id={pair} deleteCallback={deleteCallback}/>
+        {/each}
+    </div>
+
 
     <div class="fixed bottom-4 right-4 z-50">
         <Button on:click={() => (addModal = true)} color="blue" pill={true} class="!p-2">

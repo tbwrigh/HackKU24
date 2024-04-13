@@ -23,8 +23,24 @@ async def get_pairs(request: Request) -> List[PairResponse]:
         return session.execute(select(Pair)).scalars().all()
 
 
+@router.get("/{pair_id}", responses={404: {"description": "Pair not found", "model": ErrorMessage}})
+async def get_pair_by_id(req: Request, pair_id: int) -> PairResponse:
+    """
+    Get a pair by ID
+    """
+    with Session(req.app.state.db) as session:
+        pair = (
+            session.execute(select(Pair).filter(Pair.id == pair_id)).scalars().first()
+        )
+        if not pair:
+            return JSONResponse(
+                status_code=status.HTTP_404_NOT_FOUND,
+                content={"message": "Pair not found"},
+            )
+        return pair
+
 @router.get(
-    "/{patient_id}",
+    "/patient/{patient_id}",
     responses={404: {"description": "Patient not found", "model": ErrorMessage}},
 )
 async def get_pairs_by_patient_id(req: Request, patient_id: int) -> List[PairResponse]:
