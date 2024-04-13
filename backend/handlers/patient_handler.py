@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Body
+from fastapi import APIRouter, Request, Body, JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -22,13 +22,23 @@ async def get_patient_by_id(req: Request, patient_id: int) -> PatientResponse:
     Get a patient by ID
     """
     with Session(req.app.state.db) as session:
-        return session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
+        patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
+
+        if not patient:
+            return JSONResponse(status_code=404, content={"message": "Patient not found"})
+        
+        return patient
 
 @router.post("/")
 async def create_patient(req: Request, name: str = Body(...), id_string: str = Body(...)) -> PatientResponse:
     """
     Create a patient
     """
+    with Session(req.app.state.db) as session:
+        patient = session.execute(select(Patient).filter(Patient.id_string == id_string)).scalars().first()
+        if patient:
+            return JSONResponse(status_code=409, content={"message": "Patient Identifier already in use"})
+
     req.app.state.gcs_client.create_bucket(id_string)
     with Session(req.app.state.db) as session:
         patient = Patient(name=name, id_string=id_string)
@@ -43,6 +53,8 @@ async def delete_patient(req: Request, patient_id: int) -> PatientResponse:
     """
     with Session(req.app.state.db) as session:
         patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
+        if not patient:
+            return JSONResponse(status_code=404, content={"message": "Patient not found"})
         req.app.state.gcs_client.get_bucket(patient.id_string).delete()
         session.delete(patient)
         session.commit()

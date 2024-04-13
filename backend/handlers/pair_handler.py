@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, UploadFile, File, Form
+from fastapi import APIRouter, Request, UploadFile, File, Form, JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -23,6 +23,10 @@ async def get_pairs_by_patient_id(req: Request, patient_id: int) -> List[PairRes
     Get all pairs for a patient
     """
     with Session(req.app.state.db) as session:
+        patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
+        if not patient:
+            return JSONResponse(status_code=404, content={"message": "Patient not found"})
+
         return session.execute(select(Pair).filter(Pair.patient_id == patient_id)).scalars().all()
 
 @router.get("/{patient_id}/{filename}")
@@ -33,8 +37,13 @@ async def get_file(req: Request, patient_id: int, filename: str) -> bytes:
     with Session(req.app.state.db) as session:
         patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
         if not patient:
-            return "Patient not found"
+            return JSONResponse(status_code=404, content={"message": "Patient not found"})
     bucket = req.app.state.gcs_client.get_bucket(patient.id_string)
+
+    filenames = [blob.name for blob in bucket.list_blobs()]
+    if filename not in filenames:
+        return JSONResponse(status_code=404, content={"message": "File not found"})
+
     blob = bucket.blob(filename)
     return blob.download_as_string()
 
@@ -58,7 +67,7 @@ async def make_pair(req: Request, patient_id: int, object_one_value: Union[str, 
     with Session(req.app.state.db) as session:
         patient = session.execute(select(Patient).filter(Patient.id == patient_id)).scalars().first()
         if not patient:
-            return "Patient not found"
+            return JSONResponse(status_code=404, content={"message": "Patient not found"})
     
     if isinstance(object_one_value, str):
         type_one = "string"
@@ -91,8 +100,10 @@ async def delete_pair(req: Request, pair_id: int) -> PairResponse:
     Delete a pair by ID
     """
     with Session(req.app.state.db) as session:
-        pair = session.execute(select(Pair).filter(Pair.id == pair_id)).scalars().first()
         patient = session.execute(select(Patient).filter(Patient.id == pair.patient_id)).scalars().first()
+        if not patient:
+            return JSONResponse(status_code=404, content={"message": "Patient not found"})
+        pair = session.execute(select(Pair).filter(Pair.id == pair_id)).scalars().first()
         if pair.object_one_type == "file":
             delete_file(req.app.state.gcs_client, patient.id_string, pair.object_one_value)
         if pair.object_two_type == "file":
