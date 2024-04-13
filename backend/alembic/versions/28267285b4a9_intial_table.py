@@ -28,7 +28,7 @@ def upgrade() -> None:
     op.create_table(
         'object_pairs',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('patient_id', sa.Integer, sa.ForeignKey('patients.id'), nullable=False),
+        sa.Column('patient_id', sa.Integer, sa.ForeignKey('patients.id', ondelete="CASCADE"), nullable=False),
         sa.Column('object_one_type', sa.String(100), nullable=False),
         sa.Column('object_one_value', sa.String(100), nullable=False),
         sa.Column('object_two_type', sa.String(100), nullable=False),
