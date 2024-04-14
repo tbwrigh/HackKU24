@@ -88,7 +88,7 @@
                     }else {
                         answerBoxes.push({x: x_offset + x * pieceWidth, y: y * pieceHeight, width: pieceWidth, height: pieceHeight, q: x + y * numColumns});
                     }
-                    ctx.strokeStyle = 'black';
+                    ctx.strokeStyle = 'white';
                     ctx.strokeRect(x_offset + x * pieceWidth, y * pieceHeight, pieceWidth, pieceHeight);
                 }
             }
@@ -230,7 +230,7 @@
 <div class="flex w-full h-screen justify-center items-center pt-30">
     <div class="w-[65ch] flex flex-col gap-4 mt-20">
 
-        <Heading level={1} class="text-4xl text-center text-black">
+        <Heading level={1} class="text-4xl text-center text-white">
             {#if imageUrl}
             Puzzle: {title}
             {:else}
