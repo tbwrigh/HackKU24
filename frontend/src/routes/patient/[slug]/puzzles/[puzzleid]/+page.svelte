@@ -1,8 +1,8 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-
-    import { Heading, Modal, Button } from 'flowbite-svelte';
+    import { Heading } from 'flowbite-svelte';
+    import ReturnModal from '$lib/returnModal.svelte';
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -243,9 +243,4 @@
     </div>
 </div>
 
-<Modal bind:open={complete}>
-    <Heading>Congratulations! You completed the Puzzle!</Heading>
-    <Button color="purple" on:click={() => {window.location.reload()}}>Restart</Button>
-    <Button color="blue" on:click={() => {window.location.href =  `/patient/${$page.params.slug}/puzzles`}}>Back to Puzzles</Button>
-    <Button color="red" on:click={() => {window.location.href =  `/patient/${$page.params.slug}`}}>Back to Games</Button>
-</Modal>
+  <ReturnModal open={complete} route={"puzzles"} />

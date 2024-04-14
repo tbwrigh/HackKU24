@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import type { Pair } from '$lib/types';
   import Draggable from '$lib/draggable.svelte';
+  import ReturnModal from '$lib/returnModal.svelte';
 
   export let data: PageData;
 
@@ -69,8 +70,4 @@
   <p>No pairs detected for this patient</p>
 {/each}
 
-{#if won}
-<div class="fixed w-dvw h-dvh flex justify-center place-content-center items-center">
-  <p class="h-min text-4xl font-bold text-emerald-300">Congratulations, you got it!</p>
-</div>
-{/if}
+<ReturnModal open={won} route={"matching"} />
