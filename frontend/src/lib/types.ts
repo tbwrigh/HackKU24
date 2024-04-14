@@ -17,3 +17,10 @@ export type Pair = {
   object_two_type: string;
   object_two_value: string;
 }
+
+export type Puzzle = {
+  id: string;
+  patient_id: string;
+  name: string;
+  filename: string;
+}

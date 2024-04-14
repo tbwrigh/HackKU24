@@ -7,7 +7,7 @@
 
   export let data: PageData;
 
-  const games = ["Matching", "Flashcards", "Puzzle"];
+  const games = ["Matching", "Flashcards", "Puzzles"];
 
   let options: SelectOption[] = [];
   games.forEach((game) => {

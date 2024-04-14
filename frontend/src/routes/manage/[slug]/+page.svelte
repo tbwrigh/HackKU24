@@ -6,6 +6,7 @@
     import { Button, Modal, Select, Input, Label, Heading } from 'flowbite-svelte';
 
     import PairComponent from '$lib/PairComponent.svelte';
+    import PuzzleComponent from '$lib/PuzzleComponent.svelte';
 
     import type { Patient } from '$lib/types';
   
@@ -19,15 +20,30 @@
         id_string: "",
     };
 
+    let activeTab = 'pairs';
+
+    function switchTab(tab: string) {
+        activeTab = tab;
+    }
+
     let pairs: string[] = [];
+
+    let puzzles: string[] = [];
 
     onMount(async () => {
         const res = await fetch(`${backendUrl}/patient/${data.slug}`);
         patient = await res.json();
+        
         const res2 = await fetch(`${backendUrl}/pair/patient/${patient.id}`);
         let pairsData = await res2.json();
         pairsData.forEach((pair: any) => {
             pairs = [...pairs, pair.id];
+        });
+
+        const res3 = await fetch(`${backendUrl}/puzzle/patient/${patient.id}`);
+        let puzzlesData = await res3.json();
+        puzzlesData.forEach((puzzle: any) => {
+            puzzles = [...puzzles, puzzle.id];
         });
     });
 
@@ -83,6 +99,11 @@
         pairs = temp_pairs;
     }
 
+    async function deleteCallbackPuzzle(id: string) {
+        let temp_puzzles: string[] = puzzles.filter((puzzle) => puzzle !== id);
+        puzzles = temp_puzzles;
+    }
+
     async function deletePatient() {
         const res = await fetch(`${backendUrl}/patient/${patient.id}`, {
             method: 'DELETE',
@@ -107,16 +128,27 @@
             </Heading>
         </div>
 
-        <div class="overflow-y-auto max-h-[80vh] mt-[5rem]">
-      {#if pairs.length}
+        <div class="flex border-b mt-[5rem]">
+            <button class={`py-2 px-4 ${activeTab === 'pairs' ? 'border-b-2 border-blue-500' : ''}`} on:click={() => switchTab('pairs')}>
+              Pairs
+            </button>
+            <button class={`py-2 px-4 ${activeTab === 'puzzles' ? 'border-b-2 border-blue-500' : ''}`} on:click={() => switchTab('puzzles')}>
+              Puzzles
+            </button>
+          </div>
+
+        <div class="overflow-y-auto max-h-[80vh]">
+            {#if activeTab === 'pairs'}
             <div class="grid grid-cols-1 gap-4">
                 {#each pairs as pair (pair)}
                 <PairComponent id={pair} deleteCallback={deleteCallback}/>
                 {/each}
             </div>
-      {:else}
-        <p class="mt-10 text-center text-gray-700 text-xl">Click the + button to add a memory.</p>
-      {/if}
+            {:else}
+                {#each puzzles as puzzle (puzzle)}
+                <PuzzleComponent id={puzzle} deleteCallback={deleteCallbackPuzzle}/>
+                {/each}
+            {/if}
         </div>
     </div>
 </div>

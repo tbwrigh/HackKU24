@@ -79,10 +79,17 @@ async def create_puzzle(req: Request, patient_id: int, name: str = Form(...), fi
                 content={"message": "Patient not found"},
             )
 
-        filename = upload_file(req.app.state.gcs_client, patient_id, file)
+        filename = upload_file(req.app.state.gcs_client, patient.id_string, file)
         puzzle = Puzzle(patient_id=patient_id, name=name, filename=filename)
         session.add(puzzle)
+        session.flush()
+        puzzle_id = puzzle.id
         session.commit()
+
+    with Session(req.app.state.db) as session:
+        puzzle = (
+            session.execute(select(Puzzle).filter(Puzzle.id == puzzle_id)).scalars().first()
+        )
         return puzzle
 
 @router.delete("/{puzzle_id}", responses={404: {"description": "Puzzle not found", "model": ErrorMessage}})
