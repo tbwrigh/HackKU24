@@ -2,8 +2,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
 
-    import { ArrowLeftOutline } from 'flowbite-svelte-icons';
-    import { Heading } from 'flowbite-svelte';
+    import { Heading, Modal, Button } from 'flowbite-svelte';
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -35,6 +34,8 @@
 
     let shouldShuffle = true;
     let coords: any[] = [];
+
+    let complete = false;
 
     let selected: SelectedBox | undefined;
 
@@ -146,6 +147,10 @@
                 }
             }
 
+            if (completed.length == numColumns*numRows) {
+                complete = true;
+            }
+
         }
 
         image.onload = () => {
@@ -229,3 +234,10 @@
         <canvas id="puzzle" class="w-auto h-auto max-w-full max-h-full justify-center"></canvas>
     </div>
 </div>
+
+<Modal bind:open={complete}>
+    <Heading>Congratulations! You completed the Puzzle!</Heading>
+    <Button color="purple" on:click={() => {window.location.reload()}}>Restart</Button>
+    <Button color="blue" on:click={() => {window.location.href =  `/patient/${$page.params.slug}/puzzles`}}>Back to Puzzles</Button>
+    <Button color="red" on:click={() => {window.location.href =  `/patient/${$page.params.slug}`}}>Back to Games</Button>
+</Modal>
