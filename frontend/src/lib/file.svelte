@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { beforeUpdate } from 'svelte';
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -8,7 +8,7 @@
 
   let src;
 
-  onMount(async () => {
+  beforeUpdate(async () => {
     try {
       const response = await fetch(`${backendUrl}/patient/${patient_id}/download/${filename}`);
       src = URL.createObjectURL(await response.blob());

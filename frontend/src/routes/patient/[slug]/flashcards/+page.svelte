@@ -1,9 +1,11 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { Button } from 'flowbite-svelte';
-  import { ArrowLeftOutline, ArrowRightOutline } from 'flowbite-svelte-icons';
   import type { Pair } from '$lib/types';
   import Flashcard from '$lib/flashcard.svelte';
+
+  import { Button } from 'flowbite-svelte';
+  import { ArrowLeftOutline, ArrowRightOutline } from 'flowbite-svelte-icons';
+
   export let data: PageData;
 
   let currentIndex = 0;
@@ -22,7 +24,9 @@
 </script>
 
 <div class="flex flex-col justify-center items-center w-dvf h-dvh">
+  {#key currentIndex}
   <Flashcard pair={data.pairs[currentIndex]} />
+  {/key}
   <navbar class="flex place-content-between">
     <Button on:click={previousFlashcard}>
       <ArrowLeftOutline class="w-8 h-8 text-gray-800" />
