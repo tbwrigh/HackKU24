@@ -33,6 +33,9 @@
         q: number;
     }
 
+    let shouldShuffle = true;
+    let coords: any[] = [];
+
     let selected: SelectedBox | undefined;
 
     onMount(async () => {
@@ -89,12 +92,7 @@
                 }
             }
 
-            let coords = [];
-            for (let x = 0; x < numColumns; x++) {
-                for (let y = 0; y < numRows; y++) {
-                    coords.push({x: x, y: y});
-                }
-            }
+
 
             let y_offset = (pieceHeight * numRows)*1.1;
             let spacing = 0.1* pieceWidth;
@@ -103,7 +101,15 @@
             let row = 0;
 
             // scramble coords
-            coords.sort(() => Math.random() - 0.5);
+            if (shouldShuffle) {
+                for (let x = 0; x < numColumns; x++) {
+                    for (let y = 0; y < numRows; y++) {
+                        coords.push({x: x, y: y});
+                    }
+                }
+                coords.sort(() => Math.random() - 0.5);
+                shouldShuffle = false;
+            }
             let row_width = -1;
 
             for (let q = 0; q < numColumns*numRows; q++) {
@@ -125,42 +131,25 @@
                 ctx.strokeRect((q - row * row_width) * (pieceWidth+spacing), y_offset + row * row_height, pieceWidth, pieceHeight);
             }
 
-        }
+            if (selected) {
+                ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
 
-        // list with 9 colors to draw on canvas
-        // 9 rgba colors with 0.5 alpha
-        const colors = [
-            'rgba(255, 0, 0, 0.5)',
-            'rgba(0, 255, 0, 0.5)',
-            'rgba(0, 0, 255, 0.5)',
-            'rgba(255, 255, 0, 0.5)',
-            'rgba(255, 0, 255, 0.5)',
-            'rgba(0, 255, 255, 0.5)',
-            'rgba(255, 255, 255, 0.5)',
-            'rgba(0, 0, 0, 0.5)',
-            'rgba(128, 128, 128, 0.5)'
-        ];
-    
-        function zones() {
-            const ctx = canvas.getContext('2d');
-            if (ctx === null) {
-                console.error('Could not get 2d context');
-                return;
-            };
+                let tbox = undefined;
+                if (selected.answerBox) {
+                    tbox = answerBoxes.filter((box) => box.q == selected?.q)[0];
+                }else {
+                    tbox = puzzleBoxes.filter((box) => box.q == selected?.q)[0];
+                }
 
-            for (let i = 0; i < 9; i++) {
-                ctx.fillStyle = colors[i];
-                const answerBox = answerBoxes.filter((box) => box.q == i)[0];
-                ctx.fillRect(answerBox.x, answerBox.y, answerBox.width, answerBox.height);
-
-                const puzzleBox = puzzleBoxes.filter((box) => box.q == i)[0];
-                ctx.fillRect(puzzleBox.x, puzzleBox.y, puzzleBox.width, puzzleBox.height);
+                if (tbox) {
+                    ctx.fillRect(tbox.x, tbox.y, tbox.width, tbox.height);
+                }
             }
+
         }
 
         image.onload = () => {
             updateCanvas();
-            // zones();
         }
 
         canvas.addEventListener('click', (e) => {
@@ -168,12 +157,11 @@
             console.log(answerBoxes)
 
             const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
 
-            // const ctx = canvas.getContext('2d');
-            // ctx.fillStyle = 'black';
-            // ctx?.fillRect(x, y, 50, 50);
+            x *= canvas.width / rect.width;
+            y *= canvas.height / rect.height;
 
             for (let i = 0; i < answerBoxes.length; i++) {
                 if (x >= answerBoxes[i].x && x <= answerBoxes[i].x + answerBoxes[i].width && y >= answerBoxes[i].y && y <= answerBoxes[i].y + answerBoxes[i].height) {
@@ -193,6 +181,7 @@
 
             selected = undefined;
             console.log('x', x, 'y', y);
+            updateCanvas();
         });
 
         function selectBox(answerBox: boolean, q: number) {
@@ -202,16 +191,16 @@
                         answerBox: answerBox,
                         q: q
                     };
+                    updateCanvas();
                     return;
                 }else if (selected.q == q) {
                     completed.push(q);
-                    // updateCanvas();
                     selected = undefined;
+                    updateCanvas();
                     return;
-                    // corrrect
                 }else {
-                    // incorrect
                     selected = undefined;
+                    updateCanvas();
                     return;
                 }
             }else {
@@ -219,6 +208,7 @@
                     answerBox: answerBox,
                     q: q
                 };
+                updateCanvas();
             }
         }
     });
