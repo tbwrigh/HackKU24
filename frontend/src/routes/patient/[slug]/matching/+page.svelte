@@ -6,50 +6,59 @@
   export let data: PageData;
 
   let won: bool = false;
-
   let draggables = []
 
   function collisionCheck(thisdom, thispair) {
     if (won) return;
+
     draggables.forEach((otherDraggable) => {
+      // can't collide with ourselves
       if (otherDraggable.dom === thisdom) return;
+
       const rect1 = thisdom.getBoundingClientRect();
       const rect2 = otherDraggable.dom.getBoundingClientRect();
+      // if two rects are less than this distance apart, that counts as colliding
       const buffer = 100;
+
       if (
         Math.abs(rect1.left - rect2.left) <= buffer &&
-          Math.abs(rect1.top - rect2.top) <= buffer
+        Math.abs(rect1.top - rect2.top) <= buffer
       ) {
         thisdom.style.transition = 'opacity 1s';
         otherDraggable.dom.style.transition = 'opacity 1s';
+
+        // correct match
         if (otherDraggable.pair.id == thispair.id) {
           thisdom.style.opacity = '0';
           otherDraggable.dom.style.opacity = '0';
           setTimeout(() => {
             thisdom.remove();
             otherDraggable.dom.remove();
+            // if for every draggable, its dom is undefined or has been removed
             if (draggables.every((d) => d.dom === undefined || !d.dom.checkVisibility())) {
               won = true;
             }
           }, 1000);
-        } else {
+        }
+
+        // incorrect match
+        else {
           thisdom.style.opacity = '1';
           otherDraggable.dom.style.opacity = '1';
-
           thisdom.style.backgroundColor = 'red';
           otherDraggable.dom.style.backgroundColor = 'red';
+
+          // revert white background color back to red after a delay
           setTimeout(() => {
             thisdom.style.backgroundColor = 'white';
             otherDraggable.dom.style.backgroundColor = 'white';
           }, 1000);
         }
+
       }
     });
   }
 
-  // Finally this last bit of code is for running the entire element four times in order to get four individual
-  // tiles. This number can change later down the road depending on how many tiles the player wants to play 
-  // with.
 </script>
 
 {#each data.pairs as pair, i}
