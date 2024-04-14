@@ -108,11 +108,15 @@
         </div>
 
         <div class="overflow-y-auto max-h-[80vh] mt-[5rem]">
+      {#if pairs.length}
             <div class="grid grid-cols-1 gap-4">
                 {#each pairs as pair (pair)}
                 <PairComponent id={pair} deleteCallback={deleteCallback}/>
                 {/each}
             </div>
+      {:else}
+        <p class="mt-10 text-center text-gray-700 text-xl">Click the + button to add a memory.</p>
+      {/if}
         </div>
     </div>
 </div>
