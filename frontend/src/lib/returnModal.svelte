@@ -8,7 +8,7 @@
   const properName: string = route[0].toUpperCase() + route.slice(1, route.length);
 </script>
 
-<Modal bind:open={open} class="dark:bg-transparent">
+<Modal bind:open={open} class="dark:bg-transparent dark:shadow-none">
     <Heading class="text-center py-4">Congratulations! You completed the {properName}!</Heading>
   <div class="flex flex-row gap-4">
     <Button class="basis-full" color="purple" on:click={() => {window.location.reload()}}>Restart</Button>
