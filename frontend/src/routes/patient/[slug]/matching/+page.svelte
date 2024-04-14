@@ -5,19 +5,14 @@
 
   export let data: PageData;
 
-  // let draggables: any[] = []
+  let won: bool = false;
+
   let draggables = []
-  /*
-  for (let i = 0; i < data.pairs.length * 2; i++) {
-    draggables.push(null);
-  }
-  */
 
   function collisionCheck(thisdom, thispair) {
+    if (won) return;
     draggables.forEach((otherDraggable) => {
       if (otherDraggable.dom === thisdom) return;
-      console.log("otherDraggable", otherDraggable);
-      console.log("otherDraggable.dom", otherDraggable.dom);
       const rect1 = thisdom.getBoundingClientRect();
       const rect2 = otherDraggable.dom.getBoundingClientRect();
       const buffer = 100;
@@ -33,8 +28,10 @@
           setTimeout(() => {
             thisdom.remove();
             otherDraggable.dom.remove();
+            if (draggables.every((d) => d.dom === undefined || !d.dom.checkVisibility())) {
+              won = true;
+            }
           }, 1000);
-          console.log('successful match!');
         } else {
           thisdom.style.opacity = '1';
           otherDraggable.dom.style.opacity = '1';
@@ -61,3 +58,9 @@
 {:else}
   <p>No pairs detected for this patient</p>
 {/each}
+
+{#if won}
+<div class="fixed w-dvw h-dvh flex justify-center place-content-center items-center">
+  <p class="h-min text-4xl font-bold text-red-500">Congratulations, you got it!</p>
+</div>
+{/if}
