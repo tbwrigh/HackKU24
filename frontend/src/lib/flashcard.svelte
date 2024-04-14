@@ -9,8 +9,8 @@
 
 </script>
 
-<div class="flashcard-container p-4">
-  <Card on:click={() => flipped = !flipped} style={`perspective: 700px; text-align: center; transition: transform 0.3s; ${flipped ? "transform: rotateY(0.5turn)" : ""}`}>
+<div class="flashcard-container p-4 min-w-[36rem] min-h-[20rem] max-w-[36rem] max-h-[20rem]">
+  <Card on:click={() => flipped = !flipped} style={`perspective: 700px; text-align: center; transition: transform 0.3s; ${flipped ? "transform: rotateY(0.5turn)" : ""}`} class="w-full max-w-full h-full max-h-full justify-center">
     {#if flipped}
       <div style="transform: rotateY(0.5turn)">
         <Element {pair} one_or_two={1} />
