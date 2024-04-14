@@ -2,7 +2,7 @@
     import type { PageData } from './$types';
     import { onMount } from 'svelte';
 
-    import { PlusOutline } from 'flowbite-svelte-icons';
+    import { PlusOutline, ArrowLeftOutline } from 'flowbite-svelte-icons';
     import { Button, Modal, Select, Input, Label, Heading } from 'flowbite-svelte';
 
     import PairComponent from '$lib/PairComponent.svelte';
@@ -98,9 +98,14 @@
 
 <div class="flex w-full h-screen justify-center items-start pt-30">
     <div class="w-[65ch] flex flex-col gap-4">
-        <Heading level={1} class="text-4xl text-center text-black sticky top-20 z-10 bg-white">
-            {patient.name}'s Profile
-        </Heading>
+        <div class="flex items-center justify-start sticky top-20 z-10 bg-white w-full">
+            <a href={`/patient/${patient.id}`}>
+                <ArrowLeftOutline class="w-12 h-12 text-gray-800" />
+            </a>
+            <Heading level={1} class="text-4xl text-center text-black">
+                {patient.name}'s Profile
+            </Heading>
+        </div>
 
         <div class="overflow-y-auto max-h-[80vh] mt-[5rem]">
             <div class="grid grid-cols-1 gap-4">
