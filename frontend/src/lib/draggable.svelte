@@ -11,10 +11,12 @@
 
   function efunc(node) {
     let moving = false;
-    // The lines below are for randomizing the starting points of the tiles
-    // that are responsible for the matching game.
-    let left = Math.random() * window.innerWidth;
-    let top = Math.random() * window.innerHeight;
+
+    // not worth spending any more time to get this perfect
+    const marginX = 450; 
+    const marginY = 250; 
+    let left = Math.random() * (window.innerWidth - 2*marginX) + marginX;
+    let top = Math.random() * (window.innerHeight - 2*marginY) + marginY;
 
     // offset from upper left corner to mouse
     let offsetX;
