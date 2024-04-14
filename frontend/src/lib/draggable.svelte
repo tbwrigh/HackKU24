@@ -16,6 +16,10 @@
     let left = Math.random() * window.innerWidth;
     let top = Math.random() * window.innerHeight;
 
+    // offset from upper left corner to mouse
+    let offsetX;
+    let offsetY;
+
     node.style.position = 'absolute';
     node.style.top = `${top}px`;
     node.style.left = `${left}px`;
@@ -24,15 +28,17 @@
 
     // The following eventlistener is triggered when the mouse is pressed down
     // so when the tile is getting dragged the coordinates carry through
-    node.addEventListener('mousedown', () => {
+    node.addEventListener('mousedown', (e) => {
       moving = true;
+      offsetX = e.clientX - left;
+      offsetY = e.clientY - top;
     });
 
     // The following eventlistener follows the mouse coordinates and makes the tile follow it
     window.addEventListener('mousemove', (e) => {
       if (moving) {
-        left = e.clientX - 50;
-        top = e.clientY - 15;
+        left = e.clientX - offsetX;
+        top = e.clientY - offsetY;
         node.style.top = `${top}px`;
         node.style.left = `${left}px`;
       }
