@@ -18,4 +18,4 @@
   });
 </script>
 
-<img draggable="false" {src} alt={filename} />
+<img draggable="false" {src} alt={filename} class="object-scale-down min-w-min max-h-72" />

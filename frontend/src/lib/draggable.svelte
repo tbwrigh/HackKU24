@@ -55,8 +55,8 @@
 
 <svelte:options accessors={true} />
 
-<div use:efunc bind:this={dom} >
-  <Card class="w-fit">
+<div use:efunc bind:this={dom}>
+  <Card class="max-w-max">
     <Element {pair} {one_or_two} />
   </Card>
 </div>
