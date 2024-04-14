@@ -18,4 +18,4 @@
   });
 </script>
 
-<img {src} alt={filename} />
+<img draggable="false" {src} alt={filename} />
