@@ -13,8 +13,8 @@
     let title: string | undefined;
     let imageUrl: string | undefined;
 
-    let numColumns = 2;
-    let numRows = 2;
+    let numColumns = 3;
+    let numRows = 3;
 
     onMount(async () => {
         console.log('Puzzles page mounted');
@@ -39,19 +39,21 @@
                 return;
             };
 
-            let scale = 0.75;
+            let scale = 0.5;
 
-            canvas.width = image.width *scale;
-            canvas.height = image.height *scale;
+            canvas.width = image.width;
+            canvas.height = image.height;
 
             const pieceWidth = (image.width  * scale)/ numColumns;
             const pieceHeight = (image.height  * scale)/ numRows;
 
+            let x_offset = (canvas.width - pieceWidth * numColumns) / 2;
+
             for (let x = 0; x < numColumns; x++) {
                 for (let y = 0; y < numRows; y++) {
-                    ctx.drawImage(image, x * pieceWidth / scale, y * pieceHeight / scale, pieceWidth / scale, pieceHeight / scale, x * pieceWidth, y * pieceHeight, pieceWidth, pieceHeight);
+                    ctx.drawImage(image, x * pieceWidth / scale, y * pieceHeight / scale, pieceWidth / scale, pieceHeight / scale, x_offset + x * pieceWidth, y * pieceHeight, pieceWidth, pieceHeight);
                     ctx.strokeStyle = 'black';
-                    ctx.strokeRect(x*pieceWidth, y*pieceHeight, (x+1)*pieceWidth, (y+1)*pieceHeight);
+                    ctx.strokeRect(x_offset + x * pieceWidth, y * pieceHeight, pieceWidth, pieceHeight);
                 }
             }
         }
