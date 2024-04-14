@@ -192,6 +192,10 @@
         function selectBox(answerBox: boolean, q: number) {
             if (selected) {
                 if (selected.answerBox == answerBox) {
+                    if (completed.includes(q)) {
+                        updateCanvas();
+                        return;
+                    }
                     selected = {
                         answerBox: answerBox,
                         q: q
@@ -209,6 +213,10 @@
                     return;
                 }
             }else {
+                if (completed.includes(q)) {
+                    updateCanvas();
+                    return;
+                }
                 selected = {
                     answerBox: answerBox,
                     q: q
