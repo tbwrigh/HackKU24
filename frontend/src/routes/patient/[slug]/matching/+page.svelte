@@ -11,18 +11,19 @@
   function collisionCheck(thisdom, thispair) {
     if (won) return;
 
+    const rect1 = thisdom.getBoundingClientRect();
+
     draggables.forEach((otherDraggable) => {
       // can't collide with ourselves
       if (otherDraggable.dom === thisdom) return;
 
-      const rect1 = thisdom.getBoundingClientRect();
       const rect2 = otherDraggable.dom.getBoundingClientRect();
-      // if two rects are less than this distance apart, that counts as colliding
-      const buffer = 100;
 
       if (
-        Math.abs(rect1.left - rect2.left) <= buffer &&
-        Math.abs(rect1.top - rect2.top) <= buffer
+        rect2.right  > rect1.left   &&
+        rect2.left   < rect1.right  &&
+        rect2.top    < rect1.bottom &&
+        rect2.bottom > rect1.top
       ) {
         thisdom.style.transition = 'opacity 1s';
         otherDraggable.dom.style.transition = 'opacity 1s';
