@@ -82,7 +82,19 @@
         let temp_pairs: string[] = pairs.filter((pair) => pair !== id);
         pairs = temp_pairs;
     }
-  </script>
+
+    async function deletePatient() {
+        const res = await fetch(`${backendUrl}/patient/${patient.id}`, {
+            method: 'DELETE',
+        });
+
+        if (!res.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        window.location.href = '/';
+    }
+</script>
 
 <div class="flex w-full h-screen justify-center items-start pt-30">
     <div class="w-[65ch] flex flex-col gap-4">
@@ -100,14 +112,18 @@
     </div>
 </div>
 
+<div class="fixed bottom-4 right-4 z-50">
+    <Button on:click={() => (addModal = true)} color="blue" pill={true} class="!p-2">
+        <PlusOutline class="w-8 h-8"/>
+    </Button>
+</div>
 
-    <div class="fixed bottom-4 right-4 z-50">
-        <Button on:click={() => (addModal = true)} color="blue" pill={true} class="!p-2">
-          <PlusOutline class="w-8 h-8"/>
-        </Button>
-      </div>
-      
 
+<div class="fixed bottom-4 left-4 z-50">
+    <Button on:click={deletePatient} color="red" class="!p-2">
+        Delete Patient
+    </Button>
+</div>
 <Modal bind:open={addModal} size="md" autoclose={false} class="w-full">
     <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Add a Pair</h3>
     <form class="p-4" on:submit={onSubmit}>
