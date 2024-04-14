@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { ElementType } from '$lib/types.ts';
-  import Element from '$lib/element.svelte';
+  import type { Pair } from '$lib/types';
   import Flashcard from '$lib/flashcard.svelte';
+
+  const pair = Pair(1, 1, "string", "a", "string", "b");
 
 </script>
 
-<Flashcard>
-  <Element value={"front"} type={ElementType.Text} slot="front" />
-  <Element value={"back"} type={ElementType.Text} slot="back" />
-</Flashcard>
+<Flashcard {pair} />

@@ -1,5 +1,9 @@
 <script lang="ts">
+  import type { Pair } from '$lib/types.ts';
   import { Card } from 'flowbite-svelte';
+  import Element from '$lib/element.svelte';
+
+  export let pair: Pair;
 
   let flipped: boolean = false;
 
@@ -9,11 +13,11 @@
   <Card on:click={() => flipped = !flipped} style={`perspective: 700px; text-align: center; transition: transform 0.3s; ${flipped ? "transform: rotateY(0.5turn)" : ""}`}>
     {#if flipped}
       <div style="transform: rotateY(0.5turn)">
-        <slot name="back" />
+        <Element {pair} one_or_two={1} />
       </div>
     {:else}
       <div>
-        <slot name="front" />
+        <Element {pair} one_or_two={2} />
       </div>
     {/if}
   </Card>
