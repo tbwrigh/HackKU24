@@ -2,8 +2,8 @@
     import type { PageData } from './$types';
     import { onMount } from 'svelte';
 
-    import { PlusOutline, ArrowLeftOutline } from 'flowbite-svelte-icons';
-    import { Button, Modal, Select, Input, Label, Heading } from 'flowbite-svelte';
+    import { ArrowLeftOutline, FileCopyOutline, GridOutline } from 'flowbite-svelte-icons';
+    import { Button, Modal, Select, Input, Label, Heading, SpeedDial, SpeedDialButton } from 'flowbite-svelte';
 
     import PairComponent from '$lib/PairComponent.svelte';
     import PuzzleComponent from '$lib/PuzzleComponent.svelte';
@@ -100,7 +100,10 @@
     }
 
     async function deleteCallbackPuzzle(id: string) {
+        console.log('deleting puzzle');
+        console.log(puzzles)
         let temp_puzzles: string[] = puzzles.filter((puzzle) => puzzle !== id);
+        console.log(temp_puzzles);
         puzzles = temp_puzzles;
     }
 
@@ -114,6 +117,41 @@
         }
 
         window.location.href = '/';
+    }
+
+    let addPuzzleModal = false;
+
+    async function onPuzzleSubmit(event: any) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        console.log(formData);
+
+        const sendData = new FormData();
+
+        if (formData.get('puzzleName') == null || formData.get('puzzleFile') == null) {
+            alert('Please fill out all fields');
+            return;
+        }
+
+        sendData.append('name', formData.get('puzzleName')?.toString() || '');
+        sendData.append('file', formData.get('puzzleFile') as File);
+
+        const res = await fetch(`${backendUrl}/puzzle/${patient.id}`, {
+            method: 'POST',
+            body: sendData,
+        });
+
+        if (!res.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        puzzles = [...puzzles, (await res.json()).id];
+
+        addPuzzleModal = false;
+        console.log('submitted');
+    
     }
 </script>
 
@@ -153,11 +191,14 @@
     </div>
 </div>
 
-<div class="fixed bottom-4 right-4 z-50">
-    <Button on:click={() => (addModal = true)} color="blue" pill={true} class="!p-2">
-        <PlusOutline class="w-8 h-8"/>
-    </Button>
-</div>
+<SpeedDial class="fixed bottom-4, right-4 z-50" color="blue">
+    <SpeedDialButton name="Add Pair" color="blue" on:click={() => {addModal = true}}>
+        <FileCopyOutline class="w-5 h-5" />
+    </SpeedDialButton>
+    <SpeedDialButton name="Add Puzzle" color="blue" on:click={() => {addPuzzleModal = true}}>
+        <GridOutline class="w-5 h-5" />
+    </SpeedDialButton>
+</SpeedDial>
 
 
 <div class="fixed bottom-4 left-4 z-50">
@@ -213,4 +254,21 @@
       
         <Button type="submit" class="w-full mt-4" color="blue">Submit</Button>
       </form>
+</Modal>
+
+<Modal bind:open={addPuzzleModal} size="md" autoclose={false} class="w-full">
+    <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Add a Puzzle</h3>
+    <form class="p-4" on:submit={onPuzzleSubmit}>
+        <Label for="puzzleName" class="mb-2 w-full">
+            Puzzle Name
+        </Label>
+        <Input name="puzzleName" id="puzzleName" type="text" placeholder="Enter puzzle name" class="w-full" required/>
+        <br>
+        <Label for="puzzleFile" class="mb-2 w-full">
+            Upload Puzzle File
+        </Label>
+        <Input name="puzzleFile" id="puzzleFile" type="file" class="w-full" required/>
+        <br>
+        <Button type="submit" class="w-full mt-4" color="blue">Submit</Button>
+    </form>
 </Modal>

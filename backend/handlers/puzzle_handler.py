@@ -106,7 +106,8 @@ async def delete_puzzle(req: Request, puzzle_id: int) -> PuzzleResponse:
                 status_code=status.HTTP_404_NOT_FOUND,
                 content={"message": "Puzzle not found"},
             )
-        delete_file(req.app.state.gcs_client, puzzle.patient_id, puzzle.filename)
+        patient = session.execute(select(Patient).filter(Patient.id == puzzle.patient_id)).scalars().first()
+        delete_file(req.app.state.gcs_client, patient.id_string, puzzle.filename)
         session.delete(puzzle)
         session.commit()
         return puzzle
