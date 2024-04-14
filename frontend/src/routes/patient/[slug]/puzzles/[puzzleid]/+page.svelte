@@ -39,10 +39,19 @@
                 return;
             };
 
-            let scale = 0.5;
+            // canvas.width = image.width;
+            // canvas.height = image.height;
+            canvas.width = window.innerWidth * 0.8;
+            canvas.height = window.innerHeight * 0.8;
 
-            canvas.width = image.width;
-            canvas.height = image.height;
+            let scale = 0.25;
+
+            if (image.width > canvas.width || image.height > canvas.height) {
+                scale = Math.min(canvas.width / image.width, canvas.height / image.height) / 2;
+            }
+
+
+            console.log('scale', scale);
 
             const pieceWidth = (image.width  * scale)/ numColumns;
             const pieceHeight = (image.height  * scale)/ numRows;
@@ -51,11 +60,43 @@
 
             for (let x = 0; x < numColumns; x++) {
                 for (let y = 0; y < numRows; y++) {
-                    ctx.drawImage(image, x * pieceWidth / scale, y * pieceHeight / scale, pieceWidth / scale, pieceHeight / scale, x_offset + x * pieceWidth, y * pieceHeight, pieceWidth, pieceHeight);
+                    // ctx.drawImage(image, x * pieceWidth / scale, y * pieceHeight / scale, pieceWidth / scale, pieceHeight / scale, x_offset + x * pieceWidth, y * pieceHeight, pieceWidth, pieceHeight);
                     ctx.strokeStyle = 'black';
                     ctx.strokeRect(x_offset + x * pieceWidth, y * pieceHeight, pieceWidth, pieceHeight);
                 }
             }
+
+            let coords = [];
+            for (let x = 0; x < numColumns; x++) {
+                for (let y = 0; y < numRows; y++) {
+                    coords.push({x: x, y: y});
+                }
+            }
+
+            let y_offset = (pieceHeight * numRows)*1.1;
+            let spacing = 0.1* pieceWidth;
+            let vspace = 0.1* pieceHeight;
+            let row_height = pieceHeight + vspace;
+            let row = 0;
+
+            // scramble coords
+            coords.sort(() => Math.random() - 0.5);
+            let row_width = -1;
+
+            for (let q = 0; q < numColumns*numRows; q++) {
+                let x = coords[q].x;
+                let y = coords[q].y;
+                let positionIndex = x + y * numColumns;
+                if ((q+2 - row * q)*(pieceWidth + spacing) > canvas.width) {
+                    row++;
+                    if (row_width == -1) {
+                        row_width = q;
+                    }
+                }
+                ctx.drawImage(image, x * pieceWidth / scale, y * pieceHeight / scale, pieceWidth / scale, pieceHeight / scale, (q - row * row_width) * (pieceWidth+spacing), y_offset + row * row_height, pieceWidth, pieceHeight);
+                ctx.strokeRect((q - row * row_width) * (pieceWidth+spacing), y_offset + row * row_height, pieceWidth, pieceHeight);
+            }
+
         }
     });
 </script>
@@ -72,6 +113,6 @@
 
         </Heading>
 
-        <canvas id="puzzle" class="w-auto h-auto max-w-full max-h-full justify-center"></canvas>
+        <canvas id="puzzle" class="w-[80vw] h-[80vh] justify-center"></canvas>
     </div>
 </div>
