@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import type { Pair } from '$lib/types';
   import Flashcard from '$lib/flashcard.svelte';
+  import ReturnModal from '$lib/returnModal.svelte';
 
   import { Button } from 'flowbite-svelte';
   import { ArrowLeftOutline, ArrowRightOutline } from 'flowbite-svelte-icons';
@@ -9,10 +10,14 @@
   export let data: PageData;
 
   let currentIndex = 0;
+  let open: boolean = false;
 
   function nextFlashcard() {
     if (currentIndex < data.pairs.length - 1) {
       currentIndex++;
+    }
+    else {
+      open = true;
     }
   }
 
@@ -36,3 +41,5 @@
     </Button>
   </navbar>
 </div>
+
+<ReturnModal {open} route={"flashcards"} />
