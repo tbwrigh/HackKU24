@@ -8,7 +8,7 @@ from google.cloud import storage
 from google.oauth2 import service_account
 from sqlalchemy import create_engine
 
-from handlers import pair_handler, patient_handler
+from handlers import pair_handler, patient_handler, puzzle_handler
 
 
 @asynccontextmanager
@@ -37,7 +37,7 @@ app.add_middleware(
 
 app.include_router(patient_handler.router)
 app.include_router(pair_handler.router)
-
+app.include_router(puzzle_handler.router)
 
 @app.get("/")
 def read_root():

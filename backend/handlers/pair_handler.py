@@ -11,6 +11,8 @@ from models.error import ErrorMessage
 from models.pair import Pair, PairResponse
 from models.patient import Patient
 
+from utils.storage import delete_file, upload_file
+
 router = APIRouter(prefix="/pair", tags=["content"])
 
 
@@ -102,20 +104,6 @@ async def get_file(req: Request, patient_id: int, filename: str) -> bytes:
 
     return StreamingResponse(file_contents, media_type="application/octet-stream")
 
-
-def upload_file(gcs_client, patient_id, file):
-    bucket = gcs_client.get_bucket(patient_id)
-    filenames = [blob.name for blob in bucket.list_blobs()]
-    i = 0
-    original_filename = file.filename
-    while file.filename in filenames:
-        file.filename = f"{i}_{original_filename}"
-        i += 1
-    blob = bucket.blob(file.filename)
-    blob.upload_from_file(file.file)
-    return file.filename
-
-
 @router.post(
     "/{patient_id}",
     responses={404: {"description": "Patient not found", "model": ErrorMessage}},
@@ -177,13 +165,6 @@ async def make_pair(
             session.execute(select(Pair).filter(Pair.id == pair_id)).scalars().first()
         )
         return pair
-
-
-def delete_file(gcs_client, patient_id, filename):
-    bucket = gcs_client.get_bucket(patient_id)
-    blob = bucket.blob(filename)
-    blob.delete()
-
 
 @router.delete(
     "/{pair_id}",
