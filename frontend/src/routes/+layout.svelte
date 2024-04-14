@@ -6,17 +6,16 @@
   import { Button } from 'flowbite-svelte';
   import { ArrowLeftOutline } from 'flowbite-svelte-icons';
 
-  let previousPage : string = base ;
+  let parentPage : string = base ;
 
   afterNavigate(({from}) => {
-     previousPage = from?.url.pathname || previousPage
+    parentPage = $page.url.toString().slice(0, $page.url.toString().lastIndexOf('/'));
+    if (parentPage.endsWith("/patient")) parentPage = "/";
   });
-
-  console.log("url", $page.url);
 </script>
 
 {#if $page.url.pathname != "/"}
-  <Button on:click={() => goto(previousPage)} class="z-10 fixed ml-2 mt-2">
+  <Button on:click={() => goto(parentPage)} class="z-10 fixed ml-2 mt-2">
     <ArrowLeftOutline class="w-8 h-8" />
   </Button>
 {/if}
