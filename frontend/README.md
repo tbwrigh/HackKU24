@@ -2,7 +2,7 @@
 
 ## Non-Technical Introduction
 - In a short summary, the goal of this project is to help slowen the brain deterioration that is caused by the Alzheimer's disease. The way this is done is by playing a series of matching, flashcard, and puzzle games featuring their friends and family that is uploaded by their loved ones.
-- This is a problems that needs changing because there is very little options on the market, and the ones that exist are very expensive.
+- This is a problem that needs changing because there is very little options on the market, and the ones that exist are very expensive.
 
 ## Technical Breakdown
 - Our tech-stack is mainly comprised of Sveltekit on the front end, fast API handling the backend, google cloud for our database/hosting.
