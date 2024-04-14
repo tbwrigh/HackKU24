@@ -3,7 +3,7 @@
     import { onMount } from 'svelte';
 
     import { PlusOutline } from 'flowbite-svelte-icons';
-    import { Button, Modal, Select, Input, Label } from 'flowbite-svelte';
+    import { Button, Modal, Select, Input, Label, Heading } from 'flowbite-svelte';
 
     import PairComponent from '$lib/PairComponent.svelte';
 
@@ -84,13 +84,21 @@
     }
   </script>
 
-    <h1>{patient.name}'s Profile</h1>
+<div class="flex w-full h-screen justify-center items-start pt-30">
+    <div class="w-[65ch] flex flex-col gap-4">
+        <Heading level={1} class="text-4xl text-center text-black sticky top-20 z-10 bg-white">
+            {patient.name}'s Profile
+        </Heading>
 
-    <div class="grid grid-cols-1 gap-4 mt-4">
-        {#each pairs as pair (pair)}
-            <PairComponent id={pair} deleteCallback={deleteCallback}/>
-        {/each}
+        <div class="overflow-y-auto max-h-[80vh] mt-[5rem]">
+            <div class="grid grid-cols-1 gap-4">
+                {#each pairs as pair (pair)}
+                <PairComponent id={pair} deleteCallback={deleteCallback}/>
+                {/each}
+            </div>
+        </div>
     </div>
+</div>
 
 
     <div class="fixed bottom-4 right-4 z-50">
