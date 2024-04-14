@@ -1,10 +1,11 @@
 from typing import List
 
 from fastapi import APIRouter, Body, Request, status
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+import io
 
 from models.error import ErrorMessage
 from models.patient import Patient, PatientResponse
@@ -107,3 +108,39 @@ async def delete_patient(req: Request, patient_id: int) -> PatientResponse:
         session.delete(patient)
         session.commit()
         return patient
+
+@router.get(
+    "/{patient_id}/download/{filename}",
+    responses={
+        404: {"description": "Patient or File not found", "model": ErrorMessage}
+    },
+)
+async def get_patient_file(req: Request, patient_id: int, filename: str) -> bytes:
+    """
+    Get a file for a patient
+    """
+    with Session(req.app.state.db) as session:
+        patient = (
+            session.execute(select(Patient).filter(Patient.id == patient_id))
+            .scalars()
+            .first()
+        )
+        if not patient:
+            return JSONResponse(
+                status_code=status.HTTP_404_NOT_FOUND,
+                content={"message": "Patient not found"},
+            )
+    bucket = req.app.state.gcs_client.get_bucket(patient.id_string)
+
+    filenames = [blob.name for blob in bucket.list_blobs()]
+    if filename not in filenames:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND, content={"message": "File not found"}
+        )
+
+    blob = bucket.blob(filename)
+    file_contents = io.BytesIO()
+    blob.download_to_file(file_contents)
+    file_contents.seek(0)
+
+    return StreamingResponse(file_contents, media_type="application/octet-stream")
