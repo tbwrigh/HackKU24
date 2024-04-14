@@ -157,20 +157,20 @@
 
 <div class="flex w-full h-screen justify-center items-start pt-30">
     <div class="w-[65ch] flex flex-col gap-4">
-        <div class="flex items-center justify-start sticky top-20 z-10 bg-white w-full">
+        <div class="flex items-center justify-start sticky top-20 z-10 w-full">
             <a href={`/patient/${patient.id}`}>
-                <ArrowLeftOutline class="w-12 h-12 text-gray-800" />
+                <ArrowLeftOutline class="w-12 h-12 text-gray-200" />
             </a>
-            <Heading level={1} class="text-4xl text-center text-black">
+            <Heading level={1} class="text-4xl text-center text-white">
                 {patient.name}'s Profile
             </Heading>
         </div>
 
         <div class="flex border-b mt-[5rem]">
-            <button class={`py-2 px-4 ${activeTab === 'pairs' ? 'border-b-2 border-blue-500' : ''}`} on:click={() => switchTab('pairs')}>
+            <button class={`py-2 px-4 text-white ${activeTab === 'pairs' ? 'border-b-2 border-blue-500' : ''}`} on:click={() => switchTab('pairs')}>
               Pairs
             </button>
-            <button class={`py-2 px-4 ${activeTab === 'puzzles' ? 'border-b-2 border-blue-500' : ''}`} on:click={() => switchTab('puzzles')}>
+            <button class={`py-2 px-4 text-white ${activeTab === 'puzzles' ? 'border-b-2 border-blue-500' : ''}`} on:click={() => switchTab('puzzles')}>
               Puzzles
             </button>
           </div>

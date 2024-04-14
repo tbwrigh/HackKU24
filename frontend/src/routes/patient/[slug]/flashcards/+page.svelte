@@ -29,10 +29,10 @@
   {/key}
   <navbar class="flex place-content-between">
     <Button on:click={previousFlashcard}>
-      <ArrowLeftOutline class="w-8 h-8 text-gray-800" />
+      <ArrowLeftOutline class="w-8 h-8 text-gray-200" />
     </Button>
     <Button on:click={nextFlashcard}>
-      <ArrowRightOutline class="w-8 h-8 text-gray-800" />
+      <ArrowRightOutline class="w-8 h-8 text-gray-200" />
     </Button>
   </navbar>
 </div>

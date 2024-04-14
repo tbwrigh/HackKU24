@@ -43,9 +43,9 @@
     }
   </script>
   
-  <div class="flex justify-between items-center bg-white shadow-md p-4 rounded-lg">
-    <div class="flex-grow text-gray-800" style="flex-basis: 0%; max-width: 45%;">{leftText}</div>
-    <div class="flex-grow text-gray-800" style="flex-basis: 0%; max-width: 45%;">{rightText}</div>  
+  <div class="flex justify-between items-center border-2 border-white shadow-md p-4 rounded-lg">
+    <div class="flex-grow text-white" style="flex-basis: 0%; max-width: 45%;">{leftText}</div>
+    <div class="flex-grow text-white" style="flex-basis: 0%; max-width: 45%;">{rightText}</div>  
     <Button class="w-1/10" color="blue" size="xs" on:click={handleDelete}>
       <TrashBinOutline/>
     </Button>

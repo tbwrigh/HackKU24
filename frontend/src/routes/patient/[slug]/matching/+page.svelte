@@ -71,6 +71,6 @@
 
 {#if won}
 <div class="fixed w-dvw h-dvh flex justify-center place-content-center items-center">
-  <p class="h-min text-4xl font-bold text-red-500">Congratulations, you got it!</p>
+  <p class="h-min text-4xl font-bold text-emerald-300">Congratulations, you got it!</p>
 </div>
 {/if}
